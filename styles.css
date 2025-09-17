@@ -1,0 +1,124 @@
+
+body {
+  font-family: 'Segoe UI', Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background: #f4f8fb;
+  color: #222;
+}
+
+
+header {
+  background: linear-gradient(90deg, #0077b6 60%, #00b4d8 100%);
+  color: white;
+  padding: 2rem 1rem 1rem 1rem;
+  text-align: center;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+}
+
+
+nav {
+  margin-top: 1rem;
+}
+nav a {
+  margin: 0 1.5rem;
+  color: white;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 1.1rem;
+  transition: color 0.2s;
+}
+nav a:hover {
+  color: #ffd166;
+}
+
+
+section {
+  padding: 2rem 5vw;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+
+
+.card {
+  background: #fff;
+  border-radius: 20px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.10);
+  padding: 2rem 2rem 2rem 1rem;
+  margin: 2rem 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 2.5rem;
+  transition: box-shadow 0.2s, transform 0.2s;
+}
+.card img {
+  width: 220px;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 16px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.10);
+  background: #e9f7fd;
+  display: block;
+}
+.card h3 {
+  margin: 0 0 0.7rem 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+.card p {
+  margin: 0;
+  color: #444;
+  font-size: 1.08rem;
+}
+.card:hover {
+  box-shadow: 0 12px 32px rgba(0,0,0,0.16);
+  transform: translateY(-3px) scale(1.04);
+  background: #f0fbff;
+}
+
+
+#mapa {
+  width: 100%;
+  margin: 1rem 0;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+}
+
+
+.oculto {
+  display: none;
+}
+
+footer {
+  background: #0077b6;
+  color: #fff;
+  text-align: center;
+  padding: 1.5rem 0 1rem 0;
+  margin-top: 3rem;
+  font-size: 1rem;
+  box-shadow: 0 -2px 8px rgba(0,0,0,0.07);
+}
+
+
+@media (max-width: 700px) {
+  section {
+    padding: 1rem 2vw;
+  }
+  .card {
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+  }
+  .card img {
+    width: 90vw;
+    max-width: 340px;
+    height: 180px;
+    margin-bottom: 1rem;
+  }
+}

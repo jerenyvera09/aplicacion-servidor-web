@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Plataforma Turística Manta</title>
+  <link rel="stylesheet" href="styles.css">
+  <!-- Incluir librería de mapas (Leaflet) -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+</head>
+<body>
+  <header>
+    <h1>Descubre Manta</h1>
+    <nav>
+      <a href="#inicio" onclick="mostrarSeccion('inicio'); return false;">Inicio</a>
+      <a href="#lugares" onclick="mostrarSeccion('lugares'); return false;">Zonas Turísticas</a>
+      <a href="#contacto" onclick="mostrarSeccion('contacto'); return false;">Contacto</a>
+    </nav>
+  </header>
+
+  <main>
+    <section id="inicio">
+      <h2>Bienvenido a Manta</h2>
+      <p>Explora las mejores playas, hoteles y restaurantes cercanos para disfrutar tu estadía.</p>
+    </section>
+
+    <section id="lugares" style="display:none;">
+      <h2>Zonas Turísticas</h2>
+      <div class="card" onclick="mostrarLugar(0)">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/0/0e/El_Murci%C3%A9lago_Manta.jpg" alt="Playa El Murciélago">
+        <h3>Playa El Murciélago</h3>
+        <p>La playa más importante de la ciudad, céntrica y con muchas actividades náuticas. </p>
+      </div>
+      <div class="card" onclick="mostrarLugar(1)">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/5/57/Santa_Marianita_Ecuador.jpg" alt="Playa Santa Marianita">
+        <h3>Playa Santa Marianita</h3>
+        <p>Ideal para el kitesurf, hermosos atardeceres y ambiente costero relajado.</p>
+      </div>
+      <div class="card" onclick="mostrarLugar(2)">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/4/4e/Playa_San_Lorenzo_Manta.jpg" alt="Playa San Lorenzo">
+        <h3>Playa San Lorenzo</h3>
+        <p>Zona más apartada y tranquila, naturaleza, senderos y aire fresco.</p>
+      </div>
+      <div class="card" onclick="mostrarLugar(3)">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/1/1f/Liguiqui_Ecuador.jpg" alt="Ligüiqui">
+        <h3>Ligüiqui</h3>
+        <p>Playa con historia, charcos naturales, entorno rural con encanto costero.</p>
+      </div>
+    </section>
+
+    <section id="detalleLugar" class="oculto">
+      <h2 id="nombreLugar"></h2>
+      <p id="descripcionLugar"></p>
+      <div id="mapa" style="height: 400px;"></div>
+
+      <h3>Restaurantes Cercanos</h3>
+      <ul id="listaRestaurantes"></ul>
+
+      <h3>Hoteles Cercanos</h3>
+      <ul id="listaHoteles"></ul>
+    </section>
+
+    <section id="contacto" style="display:none;">
+      <h2>Contacto</h2>
+      <p>¿Tienes dudas, sugerencias o quieres más información?</p>
+      <ul style="list-style:none; padding:0;">
+        <li><strong>Email:</strong> info@turismomanta.com</li>
+        <li><strong>Teléfono:</strong> +593 5 123 4567</li>
+        <li><strong>Dirección:</strong> Av. Malecón, Manta, Ecuador</li>
+      </ul>
+      <p>¡Contáctanos y te ayudaremos a planificar tu visita!</p>
+    </section>
+  </main>
+
+
+  <footer>
+    <p>© 2025 Plataforma Turística Manta | Contacto: info@turismomanta.com</p>
+  </footer>
+
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script>
+    // Navegación entre secciones
+    function mostrarSeccion(seccion) {
+      document.getElementById('inicio').style.display = seccion === 'inicio' ? 'block' : 'none';
+      document.getElementById('lugares').style.display = seccion === 'lugares' ? 'block' : 'none';
+      document.getElementById('contacto').style.display = seccion === 'contacto' ? 'block' : 'none';
+      // Oculta el detalle de lugar si cambias de sección
+      if(seccion !== 'lugares') {
+        document.getElementById('detalleLugar').classList.add('oculto');
+      }
+    }
+    // Mostrar inicio al cargar
+    window.onload = function() { mostrarSeccion('inicio'); };
+  </script>
+</body>
+</html>
+
