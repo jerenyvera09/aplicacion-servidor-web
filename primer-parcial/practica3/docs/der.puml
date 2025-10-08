@@ -1,0 +1,101 @@
+@startuml DER
+' Diagrama manual derivado de las entidades TypeORM
+hide circle
+skinparam classAttributeIconSize 0
+
+class Usuario {
+  +id : uuid
+  +nombre : string
+  +correo : string
+  +contraseña : string
+  +estado : string
+}
+
+class Rol {
+  +id : uuid
+  +nombre : string
+  +descripcion : string
+  +permisos : string
+  +fecha_creacion : Date
+}
+
+class Reporte {
+  +id : uuid
+  +titulo : string
+  +descripcion : text
+  +ubicacion : string
+  +prioridad : string
+  +fecha_creacion : Date
+}
+
+class Categoria {
+  +id : uuid
+  +nombre : string
+  +descripcion : string
+  +prioridad : string
+  +estado : string
+}
+
+class Area {
+  +id : uuid
+  +nombre : string
+  +responsable : string
+  +ubicacion : string
+  +descripcion : string
+}
+
+class EstadoReporte {
+  +id : uuid
+  +nombre : string
+  +descripcion : string
+  +color : string
+  +orden : number
+  +es_final : boolean
+}
+
+class ArchivoAdjunto {
+  +id : uuid
+  +nombre_archivo : string
+  +tipo : string
+  +url : string
+  +tamano_kb : number
+}
+
+class Comentario {
+  +id : uuid
+  +contenido : text
+  +fecha : Date
+  +titulo : string
+  +es_publico : boolean
+}
+
+class Puntuacion {
+  +id : uuid
+  +valor : number
+  +fecha : Date
+  +comentario : string
+  +origen : string
+}
+
+class Etiqueta {
+  +id : uuid
+  +nombre : string
+  +color : string
+  +descripcion : string
+  +slug : string
+}
+
+' Relaciones
+Rol "1" -- "*" Usuario : usuarios
+Usuario "1" -- "*" Reporte : reportes
+Usuario "1" -- "*" Comentario : comentarios
+Usuario "1" -- "*" Puntuacion : puntuaciones
+Reporte "1" -- "*" ArchivoAdjunto : archivos
+Reporte "1" -- "*" Comentario : comentarios
+Reporte "1" -- "*" Puntuacion : puntuaciones
+Categoria "1" -- "*" Reporte : reportes
+Area "1" -- "*" Reporte : reportes
+EstadoReporte "1" -- "*" Reporte : reportes
+Usuario "*" -- "*" Etiqueta : usuarios_etiquetas
+Comentario "*" -- "*" Etiqueta : comentario_etiquetas
+@enduml

@@ -1,0 +1,21 @@
+{
+  "name": "practica3",
+  "version": "1.0.0",
+  "description": "Pr\u00e1ctica 3 - Sistema de Rese\u00f1as de Infraestructura - TypeORM + SQLite",
+  "main": "dist/main.js",
+  "scripts": {
+    "start": "ts-node src/main.ts",
+    "build": "tsc -p .",
+    "der": "java -jar plantuml.jar -tsvg docs/der.puml"
+  },
+  "dependencies": {
+    "reflect-metadata": "^0.1.13",
+    "sqlite3": "^5.1.7",
+    "typeorm": "^0.3.20"
+  },
+  "devDependencies": {
+    "ts-node": "^10.9.2",
+    "typescript": "^5.4.5",
+    "@types/node": "^20.11.25"
+  }
+}
