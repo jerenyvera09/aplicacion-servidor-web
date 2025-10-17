@@ -1,0 +1,30 @@
+# Node/Nest
+node_modules/
+dist/
+*.tsbuildinfo
+
+# SQLite
+practica4.sqlite
+practica4.sqlite-journal
+practica4.sqlite-wal
+practica4.sqlite-shm
+
+# Env
+.env
+.env.local
+.env.*.local
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Editor/OS
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
