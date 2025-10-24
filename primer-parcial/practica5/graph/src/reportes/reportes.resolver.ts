@@ -16,6 +16,10 @@ import {
   UsuarioType,
 } from '../types/usuario-transaccional.type';
 import {
+  ComentarioType,
+  PuntuacionType,
+} from '../types/usuario-transaccional.type';
+import {
   CategoriaType,
   AreaType,
   EstadoReporteType,
@@ -56,6 +60,32 @@ export class ReportesResolver {
     const estados =
       (await this.rest.getEstados()) as unknown as EstadoReporteType[];
     return ids.map((id) => estados.find((e) => e.id === id) ?? null);
+  });
+
+  // Loaders para colecciones relacionadas (comentarios y puntuaciones por reporte)
+  private readonly comentariosLoader = new DataLoader<number, ComentarioType[]>(
+    async (ids) => {
+      const comentarios =
+        (await this.rest.getComentarios()) as unknown as ComentarioType[];
+      return ids.map((id) =>
+        comentarios.filter(
+          (c: any) => Number(c?.reporte?.id ?? c?.reporteId) === Number(id),
+        ),
+      );
+    },
+  );
+
+  private readonly puntuacionesLoader = new DataLoader<
+    number,
+    PuntuacionType[]
+  >(async (ids) => {
+    const puntuaciones =
+      (await this.rest.getPuntuaciones()) as unknown as PuntuacionType[];
+    return ids.map((id) =>
+      puntuaciones.filter(
+        (p: any) => Number(p?.reporte?.id ?? p?.reporteId) === Number(id),
+      ),
+    );
   });
 
   @Description(
@@ -207,5 +237,21 @@ export class ReportesResolver {
     const id = reporte?.estadoId || reporte?.estado?.id;
     if (!id) return null;
     return this.estadoLoader.load(Number(id));
+  }
+
+  @ResolveField(() => [ComentarioType], { nullable: true })
+  async comentarios(@Parent() reporte: any): Promise<ComentarioType[]> {
+    if (reporte?.comentarios) return reporte.comentarios as ComentarioType[];
+    const id = reporte?.id || reporte?.reporteId;
+    if (!id) return [];
+    return this.comentariosLoader.load(Number(id));
+  }
+
+  @ResolveField(() => [PuntuacionType], { nullable: true })
+  async puntuaciones(@Parent() reporte: any): Promise<PuntuacionType[]> {
+    if (reporte?.puntuaciones) return reporte.puntuaciones as PuntuacionType[];
+    const id = reporte?.id || reporte?.reporteId;
+    if (!id) return [];
+    return this.puntuacionesLoader.load(Number(id));
   }
 }
