@@ -1,0 +1,116 @@
+# Colección de queries GraphQL (Práctica 5)
+# Cómo usar: copia la query en Apollo Sandbox (http://localhost:3001/graphql)
+
+# --- Carlos Delgado ---
+# 1) Top áreas con más reportes
+query TopAreas($limite: Int) {
+  topAreasConMasReportes(limite: $limite) {
+    area { id nombre }
+    totalReportes
+    promedioPuntuacion
+  }
+}
+# Variables:
+# { "limite": 5 }
+
+# 2) Tablero de etiquetas
+query TableroEtiquetas($limite: Int) {
+  tableroEtiquetas(limite: $limite) {
+    etiqueta { id nombre }
+    reportesUsos
+    comentariosUsos
+    totalUsos
+  }
+}
+# Variables:
+# { "limite": 10 }
+
+# 3) Resumen por usuario
+query ResumenUsuario($usuarioId: Int!) {
+  resumenUsuario(usuarioId: $usuarioId) {
+    usuario { id nombre email }
+    totalReportes
+    totalComentarios
+    promedioPuntuacionReportes
+  }
+}
+# Variables:
+# { "usuarioId": 1 }
+
+# --- Jeremy Vera ---
+# 4) Ranking de usuarios por aportes
+query RankingAportes($limite: Int, $desde: String, $hasta: String) {
+  rankingUsuariosPorAportes(limite: $limite, desde: $desde, hasta: $hasta) {
+    usuario { id nombre email }
+    totalReportes
+    totalComentarios
+    totalPuntuaciones
+    totalAportes
+  }
+}
+# Variables:
+# { "limite": 5, "desde": "2025-01-01T00:00:00.000Z", "hasta": "2025-12-31T23:59:59.999Z" }
+
+# 5) Reportes por etiqueta con promedio
+query ReportesPorEtiqueta($etiquetaId: Int!, $limite: Int) {
+  reportesPorEtiquetaConPromedio(etiquetaId: $etiquetaId, limite: $limite) {
+    reporte { id titulo categoria { nombre } area { nombre } }
+    promedioPuntuacion
+  }
+}
+# Variables:
+# { "etiquetaId": 1, "limite": 10 }
+
+# 6) Etiquetas co-ocurrentes
+query Coocurrentes($etiquetaId: Int!, $limite: Int) {
+  etiquetasCoocurrentes(etiquetaId: $etiquetaId, limite: $limite) {
+    etiqueta { id nombre }
+    enReportes
+    enComentarios
+    total
+  }
+}
+# Variables:
+# { "etiquetaId": 1, "limite": 10 }
+
+# --- Cinthia Zambrano ---
+# 7) Tendencias de comentarios por semana
+query Tendencias($desde: String, $hasta: String) {
+  tendenciasComentariosPorSemana(desde: $desde, hasta: $hasta) {
+    periodo
+    cantidad
+  }
+}
+# Variables:
+# { "desde": "2025-01-01T00:00:00.000Z", "hasta": "2025-12-31T23:59:59.999Z" }
+
+# 8) Reportes por Área y Categoría
+query AreaCategoria($areaId: Int, $categoriaId: Int) {
+  reportesPorAreaYCategoria(areaId: $areaId, categoriaId: $categoriaId) {
+    area { id nombre }
+    categoria { id nombre }
+    cantidad
+  }
+}
+# Variables:
+# { "areaId": 1 }
+
+# 9) Buscador avanzado de reportes
+query Buscador($f: BusquedaAvanzadaInput, $p: PaginacionInput) {
+  buscadorReportesAvanzado(filtro: $f, paginacion: $p) {
+    total
+    pagina
+    limite
+    items {
+      id
+      titulo
+      usuario { id nombre }
+      etiquetas { id nombre }
+    }
+  }
+}
+# Variables:
+# {
+#   "f": { "texto": "alumbrado", "etiquetaId": 1, "usuarioId": 1 },
+#   "p": { "pagina": 1, "limite": 10 }
+# }

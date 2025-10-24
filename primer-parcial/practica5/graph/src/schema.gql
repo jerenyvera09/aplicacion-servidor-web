@@ -1,0 +1,296 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+"""Archivo adjunto a un reporte."""
+type ArchivoAdjuntoType {
+  id: Int!
+  mimeType: String
+  nombre: String!
+  ruta: String!
+  tamanoBytes: Float
+}
+
+"""Conteo de reportes por combinación Área-Categoría."""
+type AreaCategoriaConteoType {
+  area: AreaType
+  cantidad: Int!
+  categoria: CategoriaType
+}
+
+"""
+Ranking de áreas por cantidad de reportes y su promedio de puntuaciones.
+"""
+type AreaRankingType {
+  area: AreaType!
+  promedioPuntuacion: Float
+  totalReportes: Int!
+}
+
+"""Área o unidad organizacional responsable."""
+type AreaType {
+  descripcion: String
+  id: Int!
+  nombre: String!
+  responsable: String
+  ubicacion: String
+}
+
+input BusquedaAvanzadaInput {
+  areaId: Int
+  categoriaId: Int
+  estadoId: Int
+  etiquetaId: Int
+  texto: String
+  usuarioId: Int
+}
+
+"""Categoría de negocio para clasificar los reportes."""
+type CategoriaType {
+  descripcion: String
+  estado: String!
+  id: Int!
+  nombre: String!
+  prioridad: String
+}
+
+"""Comentario asociado a un reporte."""
+type ComentarioType {
+  contenido: String!
+  etiquetas: [EtiquetaType!]
+  fecha: DateTime!
+  id: Int!
+  reporteId: Int!
+  usuario: UsuarioType
+}
+
+"""Par (clave, cantidad) para agregaciones por estado/área."""
+type ConteoPorEstadoType {
+  cantidad: Int!
+  estado: String!
+}
+
+"""Resumen con totales y distribuciones para dashboard."""
+type DashboardReportesType {
+  porArea: [ConteoPorEstadoType!]!
+  porEstado: [ConteoPorEstadoType!]!
+  totalReportes: Int!
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+"""Estado del ciclo de vida de un reporte."""
+type EstadoReporteType {
+  color: String
+  descripcion: String
+  es_final: Boolean
+  id: Int!
+  nombre: String!
+  orden: Float
+}
+
+"""
+Etiquetas que co-ocurren junto a otra etiqueta en reportes y comentarios.
+"""
+type EtiquetaCoocurrenciaType {
+  enComentarios: Int!
+  enReportes: Int!
+  etiqueta: EtiquetaType!
+  total: Int!
+}
+
+"""Ranking de etiquetas por uso en reportes y comentarios."""
+type EtiquetaRankingType {
+  comentariosUsos: Int!
+  etiqueta: EtiquetaType!
+  reportesUsos: Int!
+  totalUsos: Int!
+}
+
+"""Etiqueta temática utilizada en reportes y comentarios."""
+type EtiquetaType {
+  color: String
+  descripcion: String
+  id: Int!
+  nombre: String!
+  slug: String
+}
+
+input FiltroReportesInput {
+  areaId: Int
+  categoriaId: Int
+  estadoId: Int
+  texto: String
+}
+
+input PaginacionInput {
+  limite: Int! = 10
+  pagina: Int! = 1
+}
+
+"""Puntuación (1..5) que ayuda a valorar el reporte."""
+type PuntuacionType {
+  comentario: String
+  id: Int!
+  usuario: String
+  valor: Int!
+}
+
+type Query {
+  """Archivos adjuntos, opcionalmente filtrados por reporteId."""
+  archivosAdjuntos(reporteId: Int): [ArchivoAdjuntoType!]!
+
+  """Listado de áreas registradas."""
+  areas: [AreaType!]!
+
+  """
+  Buscador avanzado de reportes con filtros por etiqueta y usuario, además de los filtros básicos.
+  """
+  buscadorReportesAvanzado(filtro: BusquedaAvanzadaInput, paginacion: PaginacionInput): ReportesPaginadosType!
+
+  """Listado de categorías disponibles."""
+  categorias: [CategoriaType!]!
+
+  """
+  Comentarios, opcionalmente filtrados por reporteId (últimos primero en cliente).
+  """
+  comentarios(reporteId: Int): [ComentarioType!]!
+
+  """Dashboard de reportes: totales y distribución por estado y por área."""
+  dashboardReportes: DashboardReportesType!
+
+  """Estados posibles de un reporte."""
+  estados: [EstadoReporteType!]!
+
+  """Etiquetas para clasificar reportes y comentarios."""
+  etiquetas: [EtiquetaType!]!
+
+  """
+  Etiquetas que co-ocurren con una etiqueta dada en reportes y comentarios. Excluye la etiqueta base.
+  """
+  etiquetasCoocurrentes(etiquetaId: Int!, limite: Int): [EtiquetaCoocurrenciaType!]!
+
+  """Promedio de puntuación (1..5) calculado para un reporte específico."""
+  promedioPuntuacionPorReporte(reporteId: Int!): Float!
+
+  """Puntuaciones (1..5), opcionalmente filtradas por reporteId."""
+  puntuaciones(reporteId: Int): [PuntuacionType!]!
+
+  """
+  Ranking de usuarios por aportes (reportes + comentarios + puntuaciones). Opcionalmente filtra comentarios por rango de fechas (desde/hasta, ISO).
+  """
+  rankingUsuariosPorAportes(
+    """Fecha ISO inclusiva para comentarios"""
+    desde: String
+
+    """Fecha ISO inclusiva para comentarios"""
+    hasta: String
+    limite: Int
+  ): [UsuarioAportesRankingType!]!
+
+  """
+  Obtiene un reporte por su ID con sus relaciones básicas (categoría, área, estado, usuario, etiquetas).
+  """
+  reporte(id: Int!): ReporteType
+
+  """
+  Lista de reportes con filtros por texto/categoría/área/estado y paginación (aplica filtrado en gateway).
+  """
+  reportes(filtro: FiltroReportesInput, paginacion: PaginacionInput): ReportesPaginadosType!
+
+  """Conteo de reportes agrupado por área y categoría."""
+  reportesPorAreaYCategoria(areaId: Int, categoriaId: Int): [AreaCategoriaConteoType!]!
+
+  """
+  Lista de reportes asociados a una etiqueta con su promedio de puntuación, ordenados por mayor promedio.
+  """
+  reportesPorEtiquetaConPromedio(etiquetaId: Int!, limite: Int): [ReportePromedioType!]!
+
+  """
+  Resumen por usuario: total de reportes creados, total de comentarios del usuario, y promedio de puntuaciones de sus reportes.
+  """
+  resumenUsuario(usuarioId: Int!): UsuarioDashboardType!
+
+  """Listado de roles disponibles."""
+  roles: [String!]!
+
+  """
+  Tablero de etiquetas: usos en reportes y comentarios, ordenado por total de usos (desc).
+  """
+  tableroEtiquetas(limite: Int): [EtiquetaRankingType!]!
+
+  """Tendencia de comentarios agregada por semana ISO (YYYY-Www)."""
+  tendenciasComentariosPorSemana(desde: String, hasta: String): [TendenciaTemporalType!]!
+
+  """
+  Top de áreas con más reportes. Incluye total de reportes y promedio de puntuaciones de sus reportes.
+  """
+  topAreasConMasReportes(limite: Int): [AreaRankingType!]!
+
+  """Usuarios registrados en el sistema."""
+  usuarios: [UsuarioType!]!
+}
+
+"""Reporte con su promedio de puntuación."""
+type ReportePromedioType {
+  promedioPuntuacion: Float!
+  reporte: ReporteType!
+}
+
+"""Reporte de incidente o requerimiento, con sus relaciones principales."""
+type ReporteType {
+  area: AreaType
+  categoria: CategoriaType
+  descripcion: String!
+  estado: EstadoReporteType
+  etiquetas: [EtiquetaType!]
+  id: Int!
+  prioridad: String
+  titulo: String!
+  ubicacion: String
+  usuario: UsuarioType
+}
+
+"""Respuesta paginada de reportes con total y parámetros de página."""
+type ReportesPaginadosType {
+  items: [ReporteType!]!
+  limite: Int!
+  pagina: Int!
+  total: Int!
+}
+
+"""Punto de tendencia temporal (por semana ISO)."""
+type TendenciaTemporalType {
+  cantidad: Int!
+  periodo: String!
+}
+
+"""
+Ranking de usuarios por aportes (reportes, comentarios y puntuaciones).
+"""
+type UsuarioAportesRankingType {
+  totalAportes: Int!
+  totalComentarios: Int!
+  totalPuntuaciones: Int!
+  totalReportes: Int!
+  usuario: UsuarioType!
+}
+
+"""Resumen de actividad y calidad de los reportes de un usuario."""
+type UsuarioDashboardType {
+  promedioPuntuacionReportes: Float!
+  totalComentarios: Int!
+  totalReportes: Int!
+  usuario: UsuarioType!
+}
+
+"""Usuario del sistema que reporta o interactúa."""
+type UsuarioType {
+  email: String!
+  estado: String!
+  id: Int!
+  nombre: String!
+}
