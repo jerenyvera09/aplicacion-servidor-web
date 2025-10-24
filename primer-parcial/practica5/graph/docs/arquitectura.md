@@ -17,6 +17,7 @@ flowchart LR
 ```
 
 Notas:
+
 - El Gateway centraliza consultas y agrega datos de múltiples recursos REST.
 - DataLoader reduce N+1 al resolver relaciones (usuario, categoría, área, estado, etc.).
 - ServiceHttp aplica caché en memoria para estabilizar y acelerar respuestas.
