@@ -68,6 +68,11 @@ Colección de queries para Apollo Sandbox:
 
 - `practica5/graph/docs/queries.graphql`
 
+### Distribución 3×3 y argumentos principales
+- Carlos Delgado: topAreasConMasReportes(limite, desde, hasta), tableroEtiquetas(limite), resumenUsuario(id)
+- Jeremy Vera: rankingUsuariosPorAportes(limite), reportesPorEtiquetaConPromedio(etiqueta), etiquetasCoocurrentes(etiqueta, limite)
+- Cinthia Zambrano: tendenciasComentariosPorSemana(desde, hasta), reportesPorAreaYCategoria(areaId, categoriaId), buscadorReportesAvanzado(texto, areaId?, categoriaId?, estadoId?)
+
 ## Ejemplos base
 
 1. Reportes con filtro y paginación
@@ -133,3 +138,9 @@ query ($id: Int!) {
 - Parte de los filtros se aplican en el gateway; pueden moverse al REST si se requiere.
 - Caché HTTP: configurable con `HTTP_CACHE_TTL_SECONDS` (por defecto 60s en memoria).
 - Las capturas de las 9 queries y el schema generado pueden colocarse en `practica5/graph/docs/`.
+ - Field resolvers + DataLoader: en `reportes.resolver.ts` (usuario, categoría, área, estado) y en `comentarios.resolver.ts` (usuario) para evitar N+1 y poblar relaciones.
+ - Manejo de errores: `ServiceHttp` propaga status HTTP como `HttpException`. Para consultas por id inexistente, los resolvers retornan `null` (404) cuando aplica.
+
+## Arquitectura
+
+Consulta el diagrama en `practica5/graph/docs/arquitectura.md` (Mermaid) con el flujo Cliente → Gateway GraphQL → REST (Práctica 4) → Base de datos.
