@@ -17,7 +17,7 @@ import { join } from 'path';
 @Module({
   imports: [
     HttpModule.register({
-      baseURL: 'http://localhost:3000/api/v1',
+      baseURL: process.env.REST_BASE_URL || 'http://localhost:3000/api/v1',
       timeout: 5000,
       maxRedirects: 5,
     }),
