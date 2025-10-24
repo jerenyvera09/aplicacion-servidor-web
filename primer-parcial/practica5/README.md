@@ -145,3 +145,8 @@ query ($id: Int!) {
 ## Arquitectura
 
 Consulta el diagrama en `practica5/graph/docs/arquitectura.md` (Mermaid) con el flujo Cliente → Gateway GraphQL → REST (Práctica 4) → Base de datos.
+
+## División de trabajo y planificación
+
+- División 3×3: ver sección "Queries de Analytics (9/9) y autores".
+- Acta y cronograma: ver `practica5/graph/docs/planificacion.md`.
