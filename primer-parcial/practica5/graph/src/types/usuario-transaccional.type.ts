@@ -1,5 +1,10 @@
 import { ObjectType, Field, Int } from '@nestjs/graphql';
-import { CategoriaType, AreaType, EstadoReporteType, EtiquetaType } from './catalogo.type';
+import {
+  CategoriaType,
+  AreaType,
+  EstadoReporteType,
+  EtiquetaType,
+} from './catalogo.type';
 
 @ObjectType({ description: 'Usuario del sistema que reporta o interactúa.' })
 export class UsuarioType {
@@ -28,7 +33,9 @@ export class ArchivoAdjuntoType {
   @Field({ nullable: true }) tamanoBytes?: number;
 }
 
-@ObjectType({ description: 'Puntuación (1..5) que ayuda a valorar el reporte.' })
+@ObjectType({
+  description: 'Puntuación (1..5) que ayuda a valorar el reporte.',
+})
 export class PuntuacionType {
   @Field(() => Int) id!: number;
   @Field(() => Int) valor!: number;
@@ -36,7 +43,10 @@ export class PuntuacionType {
   @Field({ nullable: true }) comentario?: string;
 }
 
-@ObjectType({ description: 'Reporte de incidente o requerimiento, con sus relaciones principales.' })
+@ObjectType({
+  description:
+    'Reporte de incidente o requerimiento, con sus relaciones principales.',
+})
 export class ReporteType {
   @Field(() => Int) id!: number;
   @Field() titulo!: string;
@@ -45,25 +55,33 @@ export class ReporteType {
   @Field({ nullable: true }) prioridad?: string;
   @Field(() => CategoriaType, { nullable: true }) categoria?: CategoriaType;
   @Field(() => AreaType, { nullable: true }) area?: AreaType;
-  @Field(() => EstadoReporteType, { nullable: true }) estado?: EstadoReporteType;
+  @Field(() => EstadoReporteType, { nullable: true })
+  estado?: EstadoReporteType;
   @Field(() => UsuarioType, { nullable: true }) usuario?: UsuarioType;
   @Field(() => [EtiquetaType], { nullable: true }) etiquetas?: EtiquetaType[];
 }
 
-@ObjectType({ description: 'Par (clave, cantidad) para agregaciones por estado/área.' })
+@ObjectType({
+  description: 'Par (clave, cantidad) para agregaciones por estado/área.',
+})
 export class ConteoPorEstadoType {
   @Field() estado!: string;
   @Field(() => Int) cantidad!: number;
 }
 
-@ObjectType({ description: 'Resumen con totales y distribuciones para dashboard.' })
+@ObjectType({
+  description: 'Resumen con totales y distribuciones para dashboard.',
+})
 export class DashboardReportesType {
   @Field(() => Int) totalReportes!: number;
   @Field(() => [ConteoPorEstadoType]) porEstado!: ConteoPorEstadoType[];
   @Field(() => [ConteoPorEstadoType]) porArea!: ConteoPorEstadoType[];
 }
 
-@ObjectType({ description: 'Respuesta paginada de reportes con total y parámetros de página.' })
+@ObjectType({
+  description:
+    'Respuesta paginada de reportes con total y parámetros de página.',
+})
 export class ReportesPaginadosType {
   @Field(() => [ReporteType]) items!: ReporteType[];
   @Field(() => Int) total!: number;

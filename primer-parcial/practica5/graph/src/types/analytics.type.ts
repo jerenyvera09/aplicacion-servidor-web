@@ -2,7 +2,10 @@ import { ObjectType, Field, Int, Float } from '@nestjs/graphql';
 import { AreaType, EtiquetaType, CategoriaType } from './catalogo.type';
 import { ReporteType, UsuarioType } from './usuario-transaccional.type';
 
-@ObjectType({ description: 'Ranking de áreas por cantidad de reportes y su promedio de puntuaciones.' })
+@ObjectType({
+  description:
+    'Ranking de áreas por cantidad de reportes y su promedio de puntuaciones.',
+})
 export class AreaRankingType {
   @Field(() => AreaType)
   area!: AreaType;
@@ -14,7 +17,9 @@ export class AreaRankingType {
   promedioPuntuacion?: number;
 }
 
-@ObjectType({ description: 'Ranking de etiquetas por uso en reportes y comentarios.' })
+@ObjectType({
+  description: 'Ranking de etiquetas por uso en reportes y comentarios.',
+})
 export class EtiquetaRankingType {
   @Field(() => EtiquetaType)
   etiqueta!: EtiquetaType;
@@ -29,7 +34,9 @@ export class EtiquetaRankingType {
   totalUsos!: number;
 }
 
-@ObjectType({ description: 'Resumen de actividad y calidad de los reportes de un usuario.' })
+@ObjectType({
+  description: 'Resumen de actividad y calidad de los reportes de un usuario.',
+})
 export class UsuarioDashboardType {
   @Field(() => UsuarioType)
   usuario!: UsuarioType;
@@ -44,7 +51,10 @@ export class UsuarioDashboardType {
   promedioPuntuacionReportes!: number;
 }
 
-@ObjectType({ description: 'Ranking de usuarios por aportes (reportes, comentarios y puntuaciones).' })
+@ObjectType({
+  description:
+    'Ranking de usuarios por aportes (reportes, comentarios y puntuaciones).',
+})
 export class UsuarioAportesRankingType {
   @Field(() => UsuarioType)
   usuario!: UsuarioType;
@@ -71,7 +81,10 @@ export class ReportePromedioType {
   promedioPuntuacion!: number;
 }
 
-@ObjectType({ description: 'Etiquetas que co-ocurren junto a otra etiqueta en reportes y comentarios.' })
+@ObjectType({
+  description:
+    'Etiquetas que co-ocurren junto a otra etiqueta en reportes y comentarios.',
+})
 export class EtiquetaCoocurrenciaType {
   @Field(() => EtiquetaType)
   etiqueta!: EtiquetaType;
@@ -95,7 +108,9 @@ export class TendenciaTemporalType {
   cantidad!: number;
 }
 
-@ObjectType({ description: 'Conteo de reportes por combinación Área-Categoría.' })
+@ObjectType({
+  description: 'Conteo de reportes por combinación Área-Categoría.',
+})
 export class AreaCategoriaConteoType {
   @Field(() => AreaType, { nullable: true })
   area?: AreaType;

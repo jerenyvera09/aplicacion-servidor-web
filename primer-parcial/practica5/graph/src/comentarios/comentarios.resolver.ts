@@ -7,15 +7,21 @@ import { ComentarioType } from '../types/usuario-transaccional.type';
 export class ComentariosResolver {
   constructor(private readonly rest: ServiceHttp) {}
 
-  @Description('Comentarios, opcionalmente filtrados por reporteId (últimos primero en cliente).')
+  @Description(
+    'Comentarios, opcionalmente filtrados por reporteId (últimos primero en cliente).',
+  )
   @Query(() => [ComentarioType], {
-    description: 'Comentarios, opcionalmente filtrados por reporteId (últimos primero en cliente).',
+    description:
+      'Comentarios, opcionalmente filtrados por reporteId (últimos primero en cliente).',
   })
   async comentarios(
     @Args('reporteId', { type: () => Int, nullable: true }) reporteId?: number,
   ): Promise<ComentarioType[]> {
-    let items = (await this.rest.getComentarios()) as any[];
-    if (reporteId) items = items.filter((c: any) => c.reporte?.id === reporteId || c.reporteId === reporteId);
+    let items = await this.rest.getComentarios();
+    if (reporteId)
+      items = items.filter(
+        (c: any) => c.reporte?.id === reporteId || c.reporteId === reporteId,
+      );
     return items as any;
   }
 }

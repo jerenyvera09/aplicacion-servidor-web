@@ -14,8 +14,11 @@ export class ArchivosResolver {
   async archivosAdjuntos(
     @Args('reporteId', { type: () => Int, nullable: true }) reporteId?: number,
   ): Promise<ArchivoAdjuntoType[]> {
-    let items = (await this.rest.getArchivos()) as any[];
-    if (reporteId) items = items.filter((a: any) => a.reporte?.id === reporteId || a.reporteId === reporteId);
+    let items = await this.rest.getArchivos();
+    if (reporteId)
+      items = items.filter(
+        (a: any) => a.reporte?.id === reporteId || a.reporteId === reporteId,
+      );
     return items as any;
   }
 }

@@ -8,7 +8,9 @@ export class UsuariosResolver {
   constructor(private readonly rest: ServiceHttp) {}
 
   @Description('Usuarios registrados en el sistema.')
-  @Query(() => [UsuarioType], { description: 'Usuarios registrados en el sistema.' })
+  @Query(() => [UsuarioType], {
+    description: 'Usuarios registrados en el sistema.',
+  })
   async usuarios(): Promise<UsuarioType[]> {
     return this.rest.getUsuarios() as any;
   }

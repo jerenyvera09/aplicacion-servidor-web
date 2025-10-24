@@ -10,7 +10,9 @@ export class ServiceHttp {
   // Caché simple en memoria para endpoints frecuentemente consultados
   private readonly cache = new Map<string, CacheEntry>();
   // TTL por defecto en segundos
-  private readonly defaultTtlSeconds = Number(process.env.HTTP_CACHE_TTL_SECONDS ?? 60);
+  private readonly defaultTtlSeconds = Number(
+    process.env.HTTP_CACHE_TTL_SECONDS ?? 60,
+  );
   constructor(private readonly httpService: HttpService) {}
 
   private handle(error: any): never {
@@ -20,7 +22,9 @@ export class ServiceHttp {
     const url = error.config?.url ?? '';
     const fullUrl = `${baseURL || ''}${url || ''}`;
     const data = error.response?.data;
-    this.logger.error(`${error.message} code=${error.code} status=${status} ${method} ${fullUrl} body=${JSON.stringify(data)}`);
+    this.logger.error(
+      `${error.message} code=${error.code} status=${status} ${method} ${fullUrl} body=${JSON.stringify(data)}`,
+    );
     throw new HttpException(
       {
         message: 'REST error',
@@ -33,7 +37,11 @@ export class ServiceHttp {
     );
   }
 
-  private async withCache<T>(key: string, ttlSeconds: number, fetcher: () => Promise<T>): Promise<T> {
+  private async withCache<T>(
+    key: string,
+    ttlSeconds: number,
+    fetcher: () => Promise<T>,
+  ): Promise<T> {
     const now = Date.now();
     const entry = this.cache.get(key);
     if (entry && entry.expiresAt > now) {
@@ -48,9 +56,9 @@ export class ServiceHttp {
   async getCategorias(): Promise<any[]> {
     return this.withCache('categorias', this.defaultTtlSeconds, async () => {
       const { data } = await firstValueFrom(
-        this.httpService.get<any[]>('/categorias').pipe(
-          catchError((error: any) => this.handle(error)),
-        ),
+        this.httpService
+          .get<any[]>('/categorias')
+          .pipe(catchError((error: any) => this.handle(error))),
       );
       return data;
     });
@@ -59,9 +67,9 @@ export class ServiceHttp {
   async getAreas(): Promise<any[]> {
     return this.withCache('areas', this.defaultTtlSeconds, async () => {
       const { data } = await firstValueFrom(
-        this.httpService.get<any[]>('/areas').pipe(
-          catchError((error: any) => this.handle(error)),
-        ),
+        this.httpService
+          .get<any[]>('/areas')
+          .pipe(catchError((error: any) => this.handle(error))),
       );
       return data;
     });
@@ -69,9 +77,9 @@ export class ServiceHttp {
 
   async getEstados(): Promise<any[]> {
     const { data } = await firstValueFrom(
-      this.httpService.get<any[]>('/estados').pipe(
-        catchError((error: any) => this.handle(error)),
-      ),
+      this.httpService
+        .get<any[]>('/estados')
+        .pipe(catchError((error: any) => this.handle(error))),
     );
     return data;
   }
@@ -79,9 +87,9 @@ export class ServiceHttp {
   async getEtiquetas(): Promise<any[]> {
     return this.withCache('etiquetas', this.defaultTtlSeconds, async () => {
       const { data } = await firstValueFrom(
-        this.httpService.get<any[]>('/etiquetas').pipe(
-          catchError((error: any) => this.handle(error)),
-        ),
+        this.httpService
+          .get<any[]>('/etiquetas')
+          .pipe(catchError((error: any) => this.handle(error))),
       );
       return data;
     });
@@ -90,57 +98,66 @@ export class ServiceHttp {
   // ---- Taller 4 (practica4) endpoints ----
   async getReportes(): Promise<any[]> {
     // Reportes pueden cambiar con más frecuencia; cache corto
-    return this.withCache('reportes', Math.min(this.defaultTtlSeconds, 30), async () => {
-      const { data } = await firstValueFrom(
-        this.httpService.get<any[]>('/reportes').pipe(
-          catchError((error: any) => this.handle(error)),
-        ),
-      );
-      return data;
-    });
+    return this.withCache(
+      'reportes',
+      Math.min(this.defaultTtlSeconds, 30),
+      async () => {
+        const { data } = await firstValueFrom(
+          this.httpService
+            .get<any[]>('/reportes')
+            .pipe(catchError((error: any) => this.handle(error))),
+        );
+        return data;
+      },
+    );
   }
 
   async getReporte(id: number): Promise<any> {
     const { data } = await firstValueFrom(
-      this.httpService.get<any>(`/reportes/${id}`).pipe(
-        catchError((error: any) => this.handle(error)),
-      ),
+      this.httpService
+        .get<any>(`/reportes/${id}`)
+        .pipe(catchError((error: any) => this.handle(error))),
     );
     return data;
   }
 
-  async getPromedioPuntuaciones(reporteId: number): Promise<{ reporteId: number; promedio: number }> {
+  async getPromedioPuntuaciones(
+    reporteId: number,
+  ): Promise<{ reporteId: number; promedio: number }> {
     const { data } = await firstValueFrom(
-      this.httpService.get<{ reporteId: number; promedio: number }>(`/puntuaciones/promedio/${reporteId}`).pipe(
-        catchError((error: any) => this.handle(error)),
-      ),
+      this.httpService
+        .get<{
+          reporteId: number;
+          promedio: number;
+        }>(`/puntuaciones/promedio/${reporteId}`)
+        .pipe(catchError((error: any) => this.handle(error))),
     );
     return data;
   }
 
   async getPuntuaciones(): Promise<any[]> {
     const { data } = await firstValueFrom(
-      this.httpService.get<any[]>('/puntuaciones').pipe(
-        catchError((error: any) => this.handle(error)),
-      ),
+      this.httpService
+        .get<any[]>('/puntuaciones')
+        .pipe(catchError((error: any) => this.handle(error))),
     );
     return data;
   }
 
   async getComentarios(): Promise<any[]> {
     const { data } = await firstValueFrom(
-      this.httpService.get<any[]>('/comentarios').pipe(
-        catchError((error: any) => this.handle(error)),
-      ),
+      this.httpService
+        .get<any[]>('/comentarios')
+        .pipe(catchError((error: any) => this.handle(error))),
     );
     return data;
   }
 
   async getArchivos(): Promise<any[]> {
     const { data } = await firstValueFrom(
-      this.httpService.get<any[]>('/archivos').pipe(
-        catchError((error: any) => this.handle(error)),
-      ),
+      this.httpService
+        .get<any[]>('/archivos')
+        .pipe(catchError((error: any) => this.handle(error))),
     );
     return data;
   }
@@ -148,9 +165,9 @@ export class ServiceHttp {
   async getUsuarios(): Promise<any[]> {
     return this.withCache('usuarios', this.defaultTtlSeconds, async () => {
       const { data } = await firstValueFrom(
-        this.httpService.get<any[]>('/usuarios').pipe(
-          catchError((error: any) => this.handle(error)),
-        ),
+        this.httpService
+          .get<any[]>('/usuarios')
+          .pipe(catchError((error: any) => this.handle(error))),
       );
       return data;
     });
@@ -158,9 +175,9 @@ export class ServiceHttp {
 
   async getRoles(): Promise<any[]> {
     const { data } = await firstValueFrom(
-      this.httpService.get<any[]>('/roles').pipe(
-        catchError((error: any) => this.handle(error)),
-      ),
+      this.httpService
+        .get<any[]>('/roles')
+        .pipe(catchError((error: any) => this.handle(error))),
     );
     return data;
   }

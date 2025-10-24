@@ -1,6 +1,8 @@
 import { ObjectType, Field, Int } from '@nestjs/graphql';
 
-@ObjectType({ description: 'Categoría de negocio para clasificar los reportes.' })
+@ObjectType({
+  description: 'Categoría de negocio para clasificar los reportes.',
+})
 export class CategoriaType {
   @Field(() => Int) id!: number;
   @Field() nombre!: string;
@@ -28,7 +30,9 @@ export class EstadoReporteType {
   @Field({ nullable: true }) es_final?: boolean;
 }
 
-@ObjectType({ description: 'Etiqueta temática utilizada en reportes y comentarios.' })
+@ObjectType({
+  description: 'Etiqueta temática utilizada en reportes y comentarios.',
+})
 export class EtiquetaType {
   @Field(() => Int) id!: number;
   @Field() nombre!: string;

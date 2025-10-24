@@ -14,8 +14,11 @@ export class PuntuacionesResolver {
   async puntuaciones(
     @Args('reporteId', { type: () => Int, nullable: true }) reporteId?: number,
   ): Promise<PuntuacionType[]> {
-    let items = (await this.rest.getPuntuaciones()) as any[];
-    if (reporteId) items = items.filter((p: any) => p.reporte?.id === reporteId || p.reporteId === reporteId);
+    let items = await this.rest.getPuntuaciones();
+    if (reporteId)
+      items = items.filter(
+        (p: any) => p.reporte?.id === reporteId || p.reporteId === reporteId,
+      );
     return items as any;
   }
 }
