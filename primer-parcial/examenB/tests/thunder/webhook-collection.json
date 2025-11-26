@@ -1,0 +1,87 @@
+{
+  "$schema": "https://www.thunderclient.com/schema.json",
+  "client": "Thunder Client",
+  "collectionName": "Webhook Notificaciones (Pregunta 3)",
+  "dateExported": "2025-11-25",
+  "version": "1.0",
+  "folders": [
+    {
+      "name": "Webhook",
+      "children": [
+        {
+          "name": "Crear Vehiculo",
+          "request": {
+            "method": "POST",
+            "url": "http://localhost:3000/webhook/notificaciones",
+            "headers": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "json": {
+                "operacion": "crear",
+                "entidad": "vehiculo",
+                "payload": {
+                  "placa": "ABC-123",
+                  "marca": "Toyota",
+                  "modelo": "Corolla"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Actualizar Cobertura",
+          "request": {
+            "method": "POST",
+            "url": "http://localhost:3000/webhook/notificaciones",
+            "headers": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "json": {
+                "operacion": "actualizar",
+                "entidad": "cobertura",
+                "payload": {
+                  "id": "C-1",
+                  "tipo": "Todo Riesgo",
+                  "limite": 50000
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Borrar Conductor",
+          "request": {
+            "method": "POST",
+            "url": "http://localhost:3000/webhook/notificaciones",
+            "headers": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "type": "json",
+              "json": {
+                "operacion": "borrar",
+                "entidad": "conductor",
+                "payload": {
+                  "dni": "12345678"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

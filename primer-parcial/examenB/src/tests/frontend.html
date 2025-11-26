@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <title>Prueba WebSocket - Notificaciones</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <style>
+    body { font-family: system-ui, Arial, Helvetica, sans-serif; margin: 24px; }
+    #estado { padding: 8px 12px; border-radius: 6px; background: #f0f0f0; display: inline-block; }
+    #log { margin-top: 16px; padding: 12px; background: #111; color: #0f0; border-radius: 6px; min-height: 180px; white-space: pre-wrap; }
+    .row { margin: 6px 0; }
+    input, select, button { padding: 8px; margin-right: 6px; }
+  </style>
+  <!-- Cliente Socket.IO desde CDN -->
+  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+</head>
+<body>
+  <h1>Cliente WebSocket (Socket.IO) - Notificaciones</h1>
+  <div id="estado">Conectando...</div>
+
+  <div class="row">
+    <label>Servidor:</label>
+    <input id="serverUrl" type="text" value="http://localhost:3000" size="32"/>
+    <button id="btnConectar">Conectar</button>
+  </div>
+
+  <div class="row">
+    <button id="btnLimpiar">Limpiar log</button>
+  </div>
+
+  <pre id="log"></pre>
+
+  <script>
+    const estado = document.getElementById('estado');
+    const log = document.getElementById('log');
+    const serverUrlInput = document.getElementById('serverUrl');
+    const btnConectar = document.getElementById('btnConectar');
+    const btnLimpiar = document.getElementById('btnLimpiar');
+
+    let socket;
+
+    function append(line) {
+      const ts = new Date().toLocaleTimeString();
+      log.textContent = `[${ts}] ${line}\n` + log.textContent;
+    }
+
+    function conectar() {
+      try {
+        if (socket && socket.connected) {
+          socket.disconnect();
+        }
+        const url = serverUrlInput.value.trim();
+        socket = io(url, { transports: ['websocket'] });
+
+        socket.on('connect', () => {
+          estado.textContent = 'WS conectado';
+          estado.style.background = '#d1ffd1';
+          append('Conexión establecida con ' + url);
+        });
+
+        socket.on('connect_error', (err) => {
+          estado.textContent = 'Error de conexión: ' + err.message;
+          estado.style.background = '#ffd1d1';
+          append('Error de conexión: ' + err.message);
+        });
+
+        // Evento global emitido por el gateway Nest: 'notificacion'
+        socket.on('notificacion', (data) => {
+          append('notificacion: ' + JSON.stringify(data));
+          console.log('notificacion:', data);
+        });
+
+        socket.on('disconnect', (reason) => {
+          estado.textContent = 'Desconectado: ' + reason;
+          estado.style.background = '#f0f0f0';
+          append('Desconectado: ' + reason);
+        });
+      } catch (e) {
+        append('Error: ' + e.message);
+      }
+    }
+
+    btnConectar.addEventListener('click', conectar);
+    btnLimpiar.addEventListener('click', () => { log.textContent = ''; });
+
+    // Auto conectar al cargar
+    conectar();
+  </script>
+</body>
+</html>
