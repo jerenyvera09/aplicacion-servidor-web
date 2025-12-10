@@ -1,0 +1,17 @@
+### Crear un nuevo reporte
+# Esto enviará una petición al Gateway (Puerto 3000)
+# El Gateway llamará al MS-Reports, guardará el reporte y emitirá un evento a RabbitMQ.
+# El MS-Users consumirá ese evento.
+
+POST http://localhost:3000/api/reports
+Content-Type: application/json
+
+{
+  "description": "Reporte de prueba para demo de resiliencia",
+  "userId": "usuario-demo-1"
+}
+
+### Consultar el usuario (Para ver si el contador subió)
+# El contador debería subir solo 1 vez, incluso si reenviamos el mensaje en RabbitMQ.
+
+GET http://localhost:3000/api/users/usuario-demo-1

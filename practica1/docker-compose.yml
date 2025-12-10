@@ -1,0 +1,92 @@
+version: '3.8'
+
+services:
+  # --- INFRAESTRUCTURA ---
+  
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    networks:
+      - practica-network
+
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+    networks:
+      - practica-network
+
+  postgres-users:
+    image: postgres:14
+    environment:
+      POSTGRES_USER: user_db_user
+      POSTGRES_PASSWORD: user_db_pass
+      POSTGRES_DB: users_db
+    ports:
+      - "5434:5432"
+    networks:
+      - practica-network
+
+  postgres-reports:
+    image: postgres:14
+    environment:
+      POSTGRES_USER: report_db_user
+      POSTGRES_PASSWORD: report_db_pass
+      POSTGRES_DB: reports_db
+    ports:
+      - "5433:5432"
+    networks:
+      - practica-network
+
+  # --- MICROSERVICIOS ---
+
+  gateway:
+    build: ./gateway
+    ports:
+      - "3000:3000"
+    environment:
+      - REPORTS_HOST=ms-reports
+      - USERS_HOST=ms-users
+    depends_on:
+      - ms-reports
+      - ms-users
+    networks:
+      - practica-network
+
+  ms-reports:
+    build: ./ms-reports
+    ports:
+      - "3001:3001"
+    environment:
+      - DB_HOST=postgres-reports
+      - RABBITMQ_HOST=rabbitmq
+    depends_on:
+      - postgres-reports
+      - rabbitmq
+    networks:
+      - practica-network
+
+  ms-users:
+    build: ./ms-users
+    ports:
+      - "3002:3002"
+    environment:
+      - DB_HOST=postgres-users
+      - RABBITMQ_HOST=rabbitmq
+      - REDIS_HOST=redis
+    depends_on:
+      - postgres-users
+      - rabbitmq
+      - redis
+    networks:
+      - practica-network
+
+networks:
+  practica-network:
+    driver: bridge
+
