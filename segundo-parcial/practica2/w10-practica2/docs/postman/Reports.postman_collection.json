@@ -1,0 +1,119 @@
+{
+  "info": {
+    "_postman_id": "b3a9d2f0-9fbe-4b67-a1c1-7b5bba3e1c10",
+    "name": "Reports API (Gateway)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Listar reportes",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/reports",
+          "host": ["{{baseUrl}}"],
+          "path": ["reports"]
+        }
+      }
+    },
+    {
+      "name": "Listar reportes activos",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/reports/active",
+          "host": ["{{baseUrl}}"],
+          "path": ["reports", "active"]
+        }
+      }
+    },
+    {
+      "name": "Crear reporte",
+      "request": {
+        "method": "POST",
+        "header": [
+          {"key": "Content-Type", "value": "application/json"}
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"userId\": \"<ID_usuario_solicitante>\",\n  \"assignedToId\": \"<ID_analista_asignado>\",\n  \"title\": \"Alerta SQL Injection\",\n  \"description\": \"Se detectó posible inyección en endpoint /login\",\n  \"priority\": \"HIGH\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/reports",
+          "host": ["{{baseUrl}}"],
+          "path": ["reports"]
+        }
+      }
+    },
+    {
+      "name": "Obtener reporte por ID",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/reports/:id",
+          "host": ["{{baseUrl}}"],
+          "path": ["reports", ":id"],
+          "variable": [{"key": "id", "value": "<ID_REPORTE>"}]
+        }
+      }
+    },
+    {
+      "name": "Actualizar reporte (PATCH)",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {"key": "Content-Type", "value": "application/json"}
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"Alerta SQLi actualizada\",\n  \"priority\": \"URGENT\",\n  \"status\": \"IN_PROGRESS\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/reports/:id",
+          "host": ["{{baseUrl}}"],
+          "path": ["reports", ":id"],
+          "variable": [{"key": "id", "value": "<ID_REPORTE>"}]
+        }
+      }
+    },
+    {
+      "name": "Completar reporte (findings)",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {"key": "Content-Type", "value": "application/json"}
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"findings\": \"No se reprodujo el vector. Se aplicó validación parametrizada.\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/reports/:id/complete",
+          "host": ["{{baseUrl}}"],
+          "path": ["reports", ":id", "complete"],
+          "variable": [{"key": "id", "value": "<ID_REPORTE>"}]
+        }
+      }
+    },
+    {
+      "name": "Eliminar reporte",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/reports/:id",
+          "host": ["{{baseUrl}}"],
+          "path": ["reports", ":id"],
+          "variable": [{"key": "id", "value": "<ID_REPORTE>"}]
+        }
+      }
+    }
+  ],
+  "event": [],
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:3000/api" }
+  ]
+}
