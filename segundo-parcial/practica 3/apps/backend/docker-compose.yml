@@ -1,0 +1,65 @@
+version: '3.9'
+
+services:
+  rabbitmq:
+    image: rabbitmq:3.13-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: admin
+      RABBITMQ_DEFAULT_PASS: admin123
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - microservices-network
+
+  gateway-service:
+    build: ./gateway-service
+    container_name: gateway-service
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    environment:
+      RABBITMQ_URL: amqp://admin:admin123@rabbitmq:5672
+      PORT: 3002
+    ports:
+      - "3002:3002"
+    networks:
+      - microservices-network
+
+  users-service:
+    build: ./users-service
+    container_name: users-service
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    environment:
+      RABBITMQ_URL: amqp://admin:admin123@rabbitmq:5672
+      QUEUE_NAME: users_queue
+      DATABASE_NAME: users.sqlite
+    networks:
+      - microservices-network
+
+  reports-service:
+    build: ./reports-service
+    container_name: reports-service
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    environment:
+      RABBITMQ_URL: amqp://admin:admin123@rabbitmq:5672
+      QUEUE_NAME: reports_queue
+      DATABASE_NAME: reports.sqlite
+      SUPABASE_URL: ${SUPABASE_URL:-}
+      SUPABASE_SERVICE_ROLE_KEY: ${SUPABASE_SERVICE_ROLE_KEY:-}
+    networks:
+      - microservices-network
+
+networks:
+  microservices-network:
+    driver: bridge
