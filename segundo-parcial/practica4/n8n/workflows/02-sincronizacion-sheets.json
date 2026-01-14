@@ -1,0 +1,122 @@
+{
+  "name": "02 - Sincronización (Webhook → Google Sheets Append)",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "reports-sheets",
+        "httpMethod": "POST",
+        "responseMode": "responseNode"
+      },
+      "id": "2a4c8a2d-8e3b-4fb2-9fd5-9d7e4c1b2a33",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "webhookId": "4d1a7b8c-2e3f-4a5b-9c0d-1e2f3a4b5c6d",
+      "position": [260, 300]
+    },
+    {
+      "parameters": {
+        "keepOnlySet": true,
+        "values": {
+          "string": [
+            {
+              "name": "FechaHora",
+              "value": "={{$json.timestamp || new Date().toISOString()}}"
+            },
+            {
+              "name": "TipoEvento",
+              "value": "={{$json.evento}}"
+            },
+            {
+              "name": "IdRegistro",
+              "value": "={{$json.data?.report?.id || $json.data?.user?.id || ''}}"
+            },
+            {
+              "name": "Descripcion",
+              "value": "={{$json.data?.report?.title || $json.data?.user?.name || ''}}"
+            },
+            {
+              "name": "Usuario",
+              "value": "={{$json.data?.userId || $json.data?.report?.userId || $json.data?.user?.email || ''}}"
+            },
+            {
+              "name": "Estado",
+              "value": "={{$json.data?.report?.status || $json.data?.user?.status || ''}}"
+            }
+          ]
+        }
+      },
+      "id": "3b5d9b3e-9f4c-50c3-a0e6-a0f8d5c6b7a8",
+      "name": "Set (Transformar)",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 2,
+      "position": [500, 300]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": "={{$env.GSHEET_DOCUMENT_ID || ''}}",
+        "sheetName": "={{$env.GSHEET_SHEET_NAME || 'Eventos'}}",
+        "dataMode": "autoMapInputData",
+        "options": {}
+      },
+      "id": "4c6eac4f-a05d-61d4-b1f7-b1a9e6d7c8b9",
+      "name": "Google Sheets (Append)",
+      "continueOnFail": true,
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [740, 300]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\"ok\":true,\"workflow\":\"sheets\"}",
+        "options": {}
+      },
+      "id": "5d7fbd50-b16e-72e5-c208-c2bac7e8d9ca",
+      "name": "Respond to Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [980, 300]
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Set (Transformar)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set (Transformar)": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets (Append)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets (Append)": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

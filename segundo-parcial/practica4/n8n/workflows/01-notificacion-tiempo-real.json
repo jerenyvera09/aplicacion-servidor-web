@@ -1,0 +1,203 @@
+{
+  "name": "01 - Notificación en tiempo real (FIX) (Webhook → Gemini → Telegram)",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "reports-event",
+        "httpMethod": "POST",
+        "responseMode": "responseNode"
+      },
+      "id": "c52e9c61-2c55-4d5c-8c14-2cbd2f3f0b21",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "webhookId": "e8a7f2d7-0a8b-4c8f-9d7b-0bd5d7e9d2e1",
+      "position": [260, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{ !!$json.evento }}",
+              "value2": true
+            },
+            {
+              "value1": "={{ !!$json.data }}",
+              "value2": true
+            }
+          ]
+        }
+      },
+      "id": "5d4f66d6-1b5e-49bd-9a9b-5f34c8f0a2d7",
+      "name": "IF (Validar)",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [480, 300]
+    },
+    {
+      "parameters": {
+        "keepOnlySet": false,
+        "values": {
+          "string": [
+            {
+              "name": "evento",
+              "value": "={{$json.evento}}"
+            },
+            {
+              "name": "timestamp",
+              "value": "={{$json.timestamp || new Date().toISOString()}}"
+            }
+          ]
+        }
+      },
+      "id": "a1b7ce29-5c6f-4f2f-a9b4-1d84d6d70a19",
+      "name": "Set (Transformar)",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 2,
+      "position": [700, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{'https://generativelanguage.googleapis.com/v1beta/models/' + ($env.GEMINI_MODEL || 'gemini-2.0-flash') + ':generateContent?key=' + ($env.GEMINI_API_KEY || '')}}",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"contents\": [\n    {\n      \"role\": \"user\",\n      \"parts\": [\n        {\n          \"text\": \"Genera un mensaje corto (1-2 líneas) para notificar un evento del sistema.\\n\\nEvento: {{$json.evento}}\\nDatos: {{JSON.stringify($json.data)}}\\n\\nDevuelve solo texto, sin markdown.\"\n        }\n      ]\n    }\n  ]\n}",
+        "options": {
+          "timeout": 10000
+        }
+      },
+      "id": "e2f3f9b2-9e77-4f88-95e5-0b4c2cf1a7d9",
+      "name": "HTTP Request (Gemini)",
+      "continueOnFail": true,
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [920, 300]
+    },
+    {
+      "parameters": {
+        "keepOnlySet": true,
+        "values": {
+          "string": [
+            {
+              "name": "message",
+              "value": "={{$json.candidates?.[0]?.content?.parts?.[0]?.text || 'Evento recibido: ' + $node['Set (Transformar)'].json.evento}}"
+            }
+          ]
+        }
+      },
+      "id": "b3f2a8f5-0d1d-4d7b-9a9f-74e4a0d3c1b2",
+      "name": "Set (Preparar Mensaje)",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 2,
+      "position": [1140, 300]
+    },
+    {
+      "parameters": {
+        "resource": "message",
+        "operation": "sendMessage",
+        "chatId": "={{$env.TELEGRAM_CHAT_ID || ''}}",
+        "text": "={{$json.message}}",
+        "additionalFields": {}
+      },
+      "id": "c0a7f1b2-2d3e-4f5a-9b8c-1d2e3f4a5b6c",
+      "name": "Telegram",
+      "continueOnFail": true,
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1,
+      "position": [1360, 300]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\"ok\":true,\"workflow\":\"notificacion\"}",
+        "options": {}
+      },
+      "id": "d7e9a1b2-3c4d-5e6f-8a9b-0c1d2e3f4a5b",
+      "name": "Respond to Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [1580, 300]
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "IF (Validar)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF (Validar)": {
+      "main": [
+        [
+          {
+            "node": "Set (Transformar)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set (Transformar)": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request (Gemini)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request (Gemini)": {
+      "main": [
+        [
+          {
+            "node": "Set (Preparar Mensaje)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set (Preparar Mensaje)": {
+      "main": [
+        [
+          {
+            "node": "Telegram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

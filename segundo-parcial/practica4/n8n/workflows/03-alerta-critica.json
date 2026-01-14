@@ -1,0 +1,254 @@
+{
+  "name": "03 - Alertas (FIX) (Webhook → IF → Gemini → Switch urgencia)",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "reports-alerts",
+        "httpMethod": "POST",
+        "responseMode": "responseNode"
+      },
+      "id": "7f1a2b3c-4d5e-6f70-8123-456789abcdef",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "webhookId": "1a2b3c4d-5e6f-7081-9234-56789abcdef0",
+      "position": [260, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{ ['reporte.critico','reporte.vencido','producto.stock_bajo'].includes($json.evento) || ['HIGH','CRITICAL','URGENT'].includes($json.data?.report?.priority || '') }}",
+              "value2": true
+            }
+          ]
+        }
+      },
+      "id": "8a2b3c4d-5e6f-7081-9234-56789abcdef1",
+      "name": "IF (¿Crítico?)",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [500, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{'https://generativelanguage.googleapis.com/v1beta/models/' + ($env.GEMINI_MODEL || 'gemini-2.0-flash') + ':generateContent?key=' + ($env.GEMINI_API_KEY || '')}}",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"contents\": [\n    {\n      \"role\": \"user\",\n      \"parts\": [\n        {\n          \"text\": \"Clasifica la urgencia del siguiente evento en una sola palabra: ALTA, MEDIA o BAJA.\\n\\nEvento: {{$json.evento}}\\nDatos: {{JSON.stringify($json.data)}}\"\n        }\n      ]\n    }\n  ]\n}",
+        "options": {
+          "timeout": 10000
+        }
+      },
+      "id": "9b3c4d5e-6f70-8123-4567-89abcdef0123",
+      "name": "HTTP Request (Gemini Analizar)",
+      "continueOnFail": true,
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4,
+      "position": [740, 300]
+    },
+    {
+      "parameters": {
+        "keepOnlySet": true,
+        "values": {
+          "string": [
+            {
+              "name": "urgencia",
+              "value": "={{($json.candidates?.[0]?.content?.parts?.[0]?.text || 'BAJA').toUpperCase().trim()}}"
+            },
+            {
+              "name": "mensaje",
+              "value": "={{'ALERTA ' + ($json.evento || '') + ' - ' + JSON.stringify($json.data || {})}}"
+            }
+          ]
+        }
+      },
+      "id": "ac4d5e6f-7081-9234-5678-9abcdef01234",
+      "name": "Set (Urgencia)",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 2,
+      "position": [980, 300]
+    },
+    {
+      "parameters": {
+        "propertyName": "urgencia",
+        "rules": [
+          {
+            "operation": "equal",
+            "value1": "={{$json.urgencia}}",
+            "value2": "ALTA"
+          },
+          {
+            "operation": "equal",
+            "value1": "={{$json.urgencia}}",
+            "value2": "MEDIA"
+          }
+        ]
+      },
+      "id": "bd5e6f70-8123-4567-89ab-cdef01234567",
+      "name": "Switch (Urgencia)",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 2,
+      "position": [1220, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "console.log('[ALTA] Notificar (simulado):', $json)\nreturn [{ json: { ok: true, level: 'ALTA', message: $json.mensaje || '' } }]"
+      },
+      "id": "ce6f7081-9234-5678-9abc-def012345678",
+      "name": "Code (Notificar Alta)",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1460, 180]
+    },
+    {
+      "parameters": {
+        "jsCode": "console.log('[MEDIA] Notificar (simulado):', $json)\nreturn [{ json: { ok: true, level: 'MEDIA', message: $json.mensaje || '' } }]"
+      },
+      "id": "df708192-3456-789a-bcde-f0123456789a",
+      "name": "Code (Notificar Media)",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1460, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "console.log('Alerta BAJA:', $json)\nreturn [{ json: { ok: true, level: 'BAJA' } }]"
+      },
+      "id": "e0819234-5678-9abc-def0-123456789abc",
+      "name": "Code (Log Baja)",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1460, 420]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\"ok\":true,\"workflow\":\"alertas\"}",
+        "options": {}
+      },
+      "id": "f1923456-789a-bcde-f012-3456789abcde",
+      "name": "Respond to Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [1700, 300]
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "IF (¿Crítico?)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF (¿Crítico?)": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request (Gemini Analizar)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request (Gemini Analizar)": {
+      "main": [
+        [
+          {
+            "node": "Set (Urgencia)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set (Urgencia)": {
+      "main": [
+        [
+          {
+            "node": "Switch (Urgencia)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch (Urgencia)": {
+      "main": [
+        [
+          {
+            "node": "Code (Notificar Alta)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Code (Notificar Media)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Code (Log Baja)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code (Notificar Alta)": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code (Notificar Media)": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code (Log Baja)": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  }
+}
